@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model and Panorama Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #objViewer, #panoramaViewer { width: 100%; height: 100vh; }
+        #menu { position: fixed; top: 10px; left: 10px; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <button onclick="showOBJ()">Show 3D Model</button>
+        <button onclick="showPanorama()">Show Panorama</button>
+    </div>
+    <div id="objViewer"></div>
+    <div id="panoramaViewer" style="display:none;">
+        <a-scene embedded>
+            <a-sky src="your-panorama.jpg" rotation="0 -90 0"></a-sky>
+        </a-scene>
+    </div>
+
+    <script>
+        let scene, camera, renderer, obj;
+
+        function initOBJ() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('objViewer').appendChild(renderer.domElement);
+
+            const mtlLoader = new THREE.MTLLoader();
+            mtlLoader.load('your-model.mtl', function(materials) {
+                materials.preload();
+                const objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.load('your-model.obj', function(object) {
+                    obj = object;
+                    scene.add(obj);
+                    camera.position.z = 5;
+                });
+            });
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(0, 0, 10);
+            scene.add(light);
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (obj) obj.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+
+        function showOBJ() {
+            document.getElementById('objViewer').style.display = 'block';
+            document.getElementById('panoramaViewer').style.display = 'none';
+            if (!scene) initOBJ();
+        }
+
+        function showPanorama() {
+            document.getElementById('objViewer').style.display = 'none';
+            document.getElementById('panoramaViewer').style.display = 'block';
+        }
+
+        window.onload = showOBJ;
+    </script>
+</body>
+</html>
