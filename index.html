@@ -23,7 +23,7 @@
     <div id="objViewer"></div>
     <div id="panoramaViewer" style="display:none;">
         <a-scene embedded>
-            <a-sky src="your-panorama.jpg" rotation="0 -90 0"></a-sky>
+            <a-sky src="IMG_0492.jpg" rotation="0 -90 0"></a-sky>
         </a-scene>
     </div>
 
@@ -38,11 +38,11 @@
             document.getElementById('objViewer').appendChild(renderer.domElement);
 
             const mtlLoader = new THREE.MTLLoader();
-            mtlLoader.load('your-model.mtl', function(materials) {
+            mtlLoader.load('textured_output.mtl', function(materials) {
                 materials.preload();
                 const objLoader = new THREE.OBJLoader();
                 objLoader.setMaterials(materials);
-                objLoader.load('your-model.obj', function(object) {
+                objLoader.load('textured_output.obj', function(object) {
                     obj = object;
                     scene.add(obj);
                     camera.position.z = 5;
